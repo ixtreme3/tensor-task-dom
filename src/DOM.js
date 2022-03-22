@@ -5,6 +5,11 @@
   Считаем, что всегда передается тег, допускающий вставку текста в качестве своего содержимого (P, DIV, I и пр.).
 */
 export function appendToBody(tag, content, count) {
+    for (let i = 0; i < count; i++) {
+        let elem = document.createElement(`${tag}`);
+        elem.innerHTML = `${content}`;
+        document.body.append(elem);
+    }
 }
 
 /*
@@ -15,6 +20,31 @@ export function appendToBody(tag, content, count) {
   Сформированное дерево верните в качестве результата работы функции.
 */
 export function generateTree(childrenCount, level) {
+    let root = document.createElement('div');
+    root.className = `item_1`;
+
+    let currNode = root;
+    let currLevel = 1;
+
+    do {
+        if (currNode.children.length == 0 && currLevel != level) {
+            for (let i = 0; i < childrenCount; i++) {
+                let div = document.createElement('div');
+                div.className = `item_${currLevel + 1}`;
+                currNode.append(div);
+            }
+            currNode = currNode.firstElementChild;
+            currLevel++;
+        } else {
+            currNode = currNode.parentElement;
+            currLevel--;
+            if (currNode.nextElementSibling) {
+                currNode = currNode.nextElementSibling;
+            }
+        }
+    } while (currLevel != 1);
+
+    return root;
 }
 
 /*
@@ -26,4 +56,13 @@ export function generateTree(childrenCount, level) {
   Сформированное дерево верните в качестве результата работы функции.
 */
 export function replaceNodes() {
+    let tree = generateTree(2, 3);
+    let secondLevelNodes = tree.querySelectorAll('.item_2');
+    for (let i = 0; i < secondLevelNodes.length; i++) {
+        let section = document.createElement('section');
+        section.className = 'item_2';
+        section.innerHTML = secondLevelNodes[i].innerHTML;
+        secondLevelNodes[i].replaceWith(section);
+    }
+    return tree;
 }
